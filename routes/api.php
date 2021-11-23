@@ -19,4 +19,4 @@ use App\Http\Controllers\AnimalController;
 // });
 
 
-Route::apiResource('animal',AnimalController::class);
+Route::apiResource('animals',AnimalController::class);
