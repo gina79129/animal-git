@@ -13,10 +13,19 @@ class AnimalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $animals = Animal::get();
-        return response(['data'=>$animals],Response::HTTP_OK);
+        //設定預設值
+        $limit = $request->limit ?? 10; //未設定預設值為10
+
+        //使用Model orderBy方法加入SQL語法排序條件，依照 id 由大到小排序
+        $animals = Animal::orderBy('id','desc')
+                           ->paginate($limit) //使用分頁方法，最多回傳$limit筆資料
+                           ->appends($request->query()); //appends主要是可以將使用者請求的參數附加在分頁資訊中，
+                                                         //如first_page_url網址後會包含limit參數，表示使用者請
+                                                         //求時，設定?limit=10限制，回傳分頁訊息時自動加上limit
+                                                         //參數方便客戶端下次再執行請求，不會忘記加篩選規則 
+        return response(['data'=>$animals,'message'=>''],Response::HTTP_OK);
     }
 
     /**
