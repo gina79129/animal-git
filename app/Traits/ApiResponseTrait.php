@@ -13,7 +13,6 @@ trait ApiResponseTrait{
      */
 
      public function errorResponse($message,$status,$code = null){
-        //  dd($message,$status,$code);
          $code = $code ?? $status; //$code為null時預設Http狀態碼
          return response()->json(
              [
