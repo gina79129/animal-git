@@ -18,10 +18,35 @@ class AnimalController extends Controller
         //設定預設值
         $limit = $request->limit ?? 10; //未設定預設值為10
 
+        //建立查詢建構器，分段的方式撰寫SQL語句
+        $query = Animal::query();
+
+        //查詢條件
+        if(isset($request->filters)){
+            $filters = explode(',',$request->filters);
+            foreach($filters as $k =>$filter){
+                list($k,$v) = explode(':',$filter);
+                $query->where($k,'like',"%$v%");
+            }
+        }
+
+        //排序方式
+        if(isset($request->sorts)){
+            $sorts = explode(',',$request->sorts);
+            foreach($sorts as $k=>$sort){
+                list($k,$v) = explode(':',$sort);
+                if($v == 'asc' || $v == 'desc'){
+                    $query->orderBy($k,$v);
+                }
+            }
+        }else{
+            $query->orderBy('id','desc');
+        }
+
         //使用Model orderBy方法加入SQL語法排序條件，依照 id 由大到小排序
-        $animals = Animal::orderBy('id','desc')
-                           ->paginate($limit) //使用分頁方法，最多回傳$limit筆資料
-                           ->appends($request->query()); //appends主要是可以將使用者請求的參數附加在分頁資訊中，
+        $animals = $query->orderBy('id','desc')
+                         ->paginate($limit) //使用分頁方法，最多回傳$limit筆資料
+                         ->appends($request->query()); //appends主要是可以將使用者請求的參數附加在分頁資訊中，
                                                          //如first_page_url網址後會包含limit參數，表示使用者請
                                                          //求時，設定?limit=10限制，回傳分頁訊息時自動加上limit
                                                          //參數方便客戶端下次再執行請求，不會忘記加篩選規則 
