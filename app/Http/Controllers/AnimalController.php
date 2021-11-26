@@ -113,6 +113,28 @@ class AnimalController extends Controller
     //$request 指使用者請求時輸入的資料，表示這個參數要屬於Request類別才可以被方法接受
     public function store(Request $request)
     {
+
+        /*表單驗證的功能使用$this->validate方法撰寫，方法中傳入第一個值為使用者請求的資料$request
+          第二個值是一個陣列，key指的是客戶端請求時的欄位名稱，value就是laravel表單驗證定義的驗證規則字串
+          可以使用多個驗證規則，每個驗證規則使用「|」符號分隔開，串成一串文字，參考官網網址如下
+          https://laravel.com/docs/8.x/validation#available-validation-rules
+        */
+        $this->validate($request,[
+            'type_id' =>'nullable|integer', //允許null或整數
+            'name' =>'required|string|max:255', //必填文字最多255字元
+            'birthday' => 'nullable|date', //允許null或日期格式，使用PHP strtotime檢查傳入的日期字串
+            'area' => 'nullable|string|max:255', //允許null或文字最多255字元
+            'fix' => 'required|boolean', //必填並且為布林值
+            'description' => 'nullable', //允許null
+            'personality' => 'nullable' //允許null
+        ]);
+
+        /*
+           一般會員不需要會員輸入自己的ID建立動物資源，而是使用登入狀態判斷，後續將於身分
+           驗證章節修改這邊的內容，先將user_id強制寫成1寫入資料庫
+         */
+        $request['user_id'] = 1;
+
         //把使用者請求資料用all()方式轉為陣列，傳入create()方法中
         $animal = Animal::create($request->all());
         /*
