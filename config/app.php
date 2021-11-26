@@ -79,8 +79,8 @@ return [
     | to any of the locales which will be supported by the application.
     |
     */
-
-    'locale' => 'en',
+    //改成繁體中文
+    'locale' => 'zh-Hant-TW',
 
     /*
     |--------------------------------------------------------------------------
@@ -93,7 +93,10 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    //改成繁體中文
+    'fallback_locale' => 'zh-Hant-TW',
+    //修改完成後下載laravel多國語言包 https://github.com/caouecs/Laravel-lang
+    //下載語言包後，將zn-TW複製到resources\lang 並將檔案夾名稱改成zh-Hant-TW
 
     /*
     |--------------------------------------------------------------------------

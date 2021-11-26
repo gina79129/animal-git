@@ -182,6 +182,18 @@ class AnimalController extends Controller
      */
     public function update(Request $request, Animal $animal)
     {
+        $this->validate($request,[
+            'type_id' =>'nullable|integer', //允許null或整數
+            'name' =>'string|max:255', //文字類型最多255字元
+            'birthday' => 'nullable|date', //允許null或日期格式
+            'area' => 'nullable|string|max:255', //允許null或文字最多255字元
+            'fix' => 'boolean', //若填寫並須是布林值
+            'description' => 'nullable|string', //允許null或文字
+            'personality' => 'nullable|string' //允許null或文字
+        ]);
+
+        $request['user_id'] = 1;
+
         $animal->update($request->all());
         return response($animal,Response::HTTP_OK);
     }
