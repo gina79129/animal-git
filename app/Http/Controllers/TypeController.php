@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TypeCollection;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\TypeResource;
 
 class TypeController extends Controller
 {
@@ -17,9 +19,11 @@ class TypeController extends Controller
     public function index()
     {
         //考量到分類少直接全部輸出
-        $types = Type::get();
-
-        return response(['data'=>$types],Response::HTTP_OK);
+        // $types = Type::get();
+        $types = Type::select('id','name','sort')->get();
+        
+        // return response(['data'=>$types],Response::HTTP_OK);
+        return new TypeCollection($types);
     }
 
     /**
@@ -53,7 +57,8 @@ class TypeController extends Controller
         }
 
         $type = Type::create($request->all()); //寫入資料庫
-        return response(['data'=>$type],Response::HTTP_CREATED);
+        // return response(['data'=>$type],Response::HTTP_CREATED);
+        return new TypeResource($type);
     }
 
     /**
@@ -64,7 +69,9 @@ class TypeController extends Controller
      */
     public function show(Type $type)
     {
-        return response(['data'=>$type],Response::HTTP_OK);
+        // return response(['data'=>$type],Response::HTTP_OK);
+        return new TypeResource($type);
+
     }
 
     /**
@@ -94,7 +101,8 @@ class TypeController extends Controller
         ]);
 
         $type->update($request->all());
-        return response(['data'=>$type],Response::HTTP_OK);
+        // return response(['data'=>$type],Response::HTTP_OK);
+        return new TypeResource($type);
     }
 
     /**
