@@ -124,7 +124,7 @@ class AnimalController extends Controller
           https://laravel.com/docs/8.x/validation#available-validation-rules
         */
         $this->validate($request,[
-            'type_id' =>'nullable|integer', //允許null或整數
+            'type_id' =>'nullable|exists:types,id', //客戶端的type_id必須存在分類資料表中，反之不存在types資料表將不允許新增以及修改，並回應type_id不是有效的資料
             'name' =>'required|string|max:255', //必填文字最多255字元
             'birthday' => 'nullable|date', //允許null或日期格式，使用PHP strtotime檢查傳入的日期字串
             'area' => 'nullable|string|max:255', //允許null或文字最多255字元
@@ -190,7 +190,7 @@ class AnimalController extends Controller
     public function update(Request $request, Animal $animal)
     {
         $this->validate($request,[
-            'type_id' =>'nullable|integer', //允許null或整數
+            'type_id' =>'nullable|exists:types,id', //客戶端的type_id必須存在分類資料表中，反之不存在types資料表將不允許新增以及修改，並回應type_id不是有效的資料
             'name' =>'string|max:255', //文字類型最多255字元
             'birthday' => 'nullable|date', //允許null或日期格式
             'area' => 'nullable|string|max:255', //允許null或文字最多255字元
