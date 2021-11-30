@@ -6,6 +6,7 @@ use App\Models\Animal;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\AnimalResource;
 
 class AnimalController extends Controller
 {
@@ -148,7 +149,9 @@ class AnimalController extends Controller
           出來的實體物件資料，包含在HTTP協定的內容中回傳給客戶端，第二個參數設定的HTTP狀態，可以直
           接輸入HTTP狀態碼201表示「成功建立」的意思或用Symfony套件寫好的常數
         */
-        return response($animal,Response::HTTP_CREATED);
+        return new AnimalResource($animal);
+
+        // return response($animal,Response::HTTP_CREATED);
     }
 
     /**
@@ -159,7 +162,8 @@ class AnimalController extends Controller
      */
     public function show(Animal $animal)
     {
-        return response($animal,Response::HTTP_OK);
+        return new AnimalResource($animal);
+        // return response($animal,Response::HTTP_OK);
     }
 
     /**
@@ -195,7 +199,9 @@ class AnimalController extends Controller
         $request['user_id'] = 1;
 
         $animal->update($request->all());
-        return response($animal,Response::HTTP_OK);
+
+        return new AnimalResource($animal);
+        // return response($animal,Response::HTTP_OK);
     }
 
     /**
