@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\AnimalResource;
+use App\Http\Resources\AnimalCollection;
+
 
 class AnimalController extends Controller
 {
@@ -57,7 +59,7 @@ class AnimalController extends Controller
         }
 
         //建立查詢建構器，分段的方式撰寫SQL語句
-        $query = Animal::query();
+        $query = Animal::query()->with('type');
 
         //查詢條件
         if(isset($request->filters)){
@@ -90,7 +92,8 @@ class AnimalController extends Controller
         
         //沒有快取記錄記住資料，並設定60秒過期，快取名稱使用網址命名
         return Cache::remember($fullUrl,60,function() use ($animals){
-            return response(['data'=>$animals,'message'=>''],Response::HTTP_OK);
+            // return response(['data'=>$animals,'message'=>''],Response::HTTP_OK);
+            return new AnimalCollection($animals);
         });
     }
 
