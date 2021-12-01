@@ -16,6 +16,17 @@ class TypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
+    /**
+     * $this->middleware() 方法使用Laravel 功能中介層，第一個參數傳入系統註冊的中介層名稱auth，
+     * 第二個參數傳入一個陣列，使用except當key值，表示這個Controller中除了index(查詢清單)、
+     * show(查詢單一資源)不需要驗證身分，其他必需認證才可以操作，反之還有only的key可以使用。
+     */ 
+    public function __construct(){
+        $this->middleware('auth:api',['except'=>['index','show']]);
+    }
+
     public function index()
     {
         //考量到分類少直接全部輸出
