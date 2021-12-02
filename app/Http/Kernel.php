@@ -63,5 +63,12 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
+        'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
     ];
+    /**
+     * Passport有提供兩個中介層，用於驗證傳入Token是否擁有該Scope權限
+     * scopes 中介層 檢查所有Scope都被允許
+     * scope 中介層 檢查至少有一個Scope允許
+     */
 }

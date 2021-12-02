@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class Handler extends ExceptionHandler
 {
@@ -79,6 +80,13 @@ class Handler extends ExceptionHandler
                 return $this->errorResponse(
                     $exception->getMessage(),
                     Response::HTTP_METHOD_NOT_ALLOWED
+                );
+            }
+            //scopes中介層驗證 create-animals  Scope未被允許
+            if($exception instanceof AuthorizationException){
+                return $this->errorResponse(
+                    $exception->getMessage(),
+                    Response::HTTP_FORBIDDEN
                 );
             }
         }
