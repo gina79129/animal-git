@@ -10,6 +10,7 @@ use App\Http\Resources\AnimalResource;
 use App\Http\Resources\AnimalCollection;
 
 
+
 class AnimalController extends Controller
 {
     /**
@@ -20,6 +21,7 @@ class AnimalController extends Controller
 
     public function __construct(){
         $this->middleware('scopes:create-animals',['only'=>['store']]);
+        $this->middleware('client',['only'=>['index','show']]);
         $this->middleware('auth:api',['except'=>['index','show']]);
     }
 
@@ -143,10 +145,12 @@ class AnimalController extends Controller
            一般會員不需要會員輸入自己的ID建立動物資源，而是使用登入狀態判斷，後續將於身分
            驗證章節修改這邊的內容，先將user_id強制寫成1寫入資料庫
          */
-        $request['user_id'] = 1;
-
+        // $request['user_id'] = 1;
         //把使用者請求資料用all()方式轉為陣列，傳入create()方法中
-        $animal = Animal::create($request->all());
+        // $animal = Animal::create($request->all());
+
+        $animal = auth()->user()->animals()->create($request->all());
+
         /*
           上面寫入資料庫後不會再對資料庫做一次查詢動作，有些欄位如果沒有填寫，資料庫直接給予預設值，
           程式方面若回傳$animal物件，沒有填寫的欄位就不會顯示，因此如果需要回傳完整的欄位資料，可以
@@ -205,7 +209,7 @@ class AnimalController extends Controller
             'personality' => 'nullable|string' //允許null或文字
         ]);
 
-        $request['user_id'] = 1;
+        // $request['user_id'] = 1;
 
         $animal->update($request->all());
 

@@ -65,6 +65,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
         'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
+        //客戶端憑證授權
+        'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
     ];
     /**
      * Passport有提供兩個中介層，用於驗證傳入Token是否擁有該Scope權限
