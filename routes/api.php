@@ -23,6 +23,6 @@ use App\Http\Controllers\TypeController;
 
 Route::apiResource('animals',AnimalController::class);
 Route::apiResource('types',TypeController::class);
-Route::middleware(['auth:;api','scope:user-info'])->get('/user',function(Request $request){
+Route::middleware(['auth:api','scope:user-info'])->get('/user',function(Request $request){
     return $request->user();
 });
