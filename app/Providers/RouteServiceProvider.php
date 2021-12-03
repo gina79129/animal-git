@@ -56,6 +56,13 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
+        /**
+         * 主要的目的是限制客戶端一定時間內只能請求幾次API，註冊中介層檔案app\Http\Kernel.php中的$middlewareGroups
+         * 屬性的api群組裡面有一個throttle:api中介層設定，用於限制請求次數，可以對應如下檔案，有定義一個api路由的限制，
+         * 預設一分鐘內可以請求60次
+         * 使用postman查看動物列表的api，點選回應的標頭資訊，分別會有X-RateLimit-Limit(請求次數)、X-RateLimit-Remaining(剩餘次數)
+         * Retry-After(重置秒數)，當剩餘0次時，狀態碼回傳429 Too Many Requests(請求太多次的狀態)
+         */
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });
