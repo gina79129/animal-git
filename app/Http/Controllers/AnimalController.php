@@ -125,7 +125,12 @@ class AnimalController extends Controller
     //$request 指使用者請求時輸入的資料，表示這個參數要屬於Request類別才可以被方法接受
     public function store(Request $request)
     {
+        
 
+        /**
+         * 如沒有實體物件時，就在類別名稱後加上::class即可
+         */
+        $this->authorize('create',Animal::class);
         /*表單驗證的功能使用$this->validate方法撰寫，方法中傳入第一個值為使用者請求的資料$request
           第二個值是一個陣列，key指的是客戶端請求時的欄位名稱，value就是laravel表單驗證定義的驗證規則字串
           可以使用多個驗證規則，每個驗證規則使用「|」符號分隔開，串成一串文字，參考官網網址如下
@@ -199,6 +204,17 @@ class AnimalController extends Controller
      */
     public function update(Request $request, Animal $animal)
     {
+        /**
+         * 在預計檢查授權的地方加入下方程式碼，特別注意如果檢查的位置，沒有經過auth中介層，
+         * 例如查看動物列表以及單一動物資料的API，會員不須登入也可以操作，在這些方法中加入
+         * 檢查，會找不到會員物件，使用以下方法會回傳HTTP 403狀態碼，就算會員帳號登入也無法
+         * 搜尋到，所以不要在不需要登入的API加上這個限制，Policy主要專注已驗證身分的會員中區
+         * 分不同權限
+         * 以下程式碼執行到這一行就會檢查權限，有註冊的AnimalPolicy原則檔案綁定Animal Model
+         * 所以只要把$animal這個實體物件，放在第二個參數，第一個參數加入AnimalPolicy裡面的方
+         * 法名稱將會自動對應到原則檔案中的方法
+         */
+        $this->authorize('update',$animal); //分組權限檢查
         $this->validate($request,[
             'type_id' =>'nullable|exists:types,id', //客戶端的type_id必須存在分類資料表中，反之不存在types資料表將不允許新增以及修改，並回應type_id不是有效的資料
             'name' =>'string|max:255', //文字類型最多255字元
