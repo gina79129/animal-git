@@ -36,7 +36,7 @@
                         </thead>
 
                         <tbody>
-                            <tr v-for="token in tokens">
+                            <tr v-for="token in tokens" :key="token">
                                 <!-- Client Name -->
                                 <td style="vertical-align: middle;">
                                     {{ token.name }}
@@ -73,7 +73,7 @@
                             <p class="mb-0"><strong>Whoops!</strong> Something went wrong!</p>
                             <br>
                             <ul>
-                                <li v-for="error in form.errors">
+                                <li v-for="error in form.errors" :key="error">
                                     {{ error }}
                                 </li>
                             </ul>
@@ -95,7 +95,7 @@
                                 <label class="col-md-4 col-form-label">Scopes</label>
 
                                 <div class="col-md-6">
-                                    <div v-for="scope in scopes">
+                                    <div v-for="scope in scopes" :key="scope">
                                         <div class="checkbox">
                                             <label>
                                                 <input type="checkbox"
@@ -141,7 +141,7 @@
                             You may now use this token to make API requests.
                         </p>
 
-                        <textarea class="form-control" rows="10">{{ accessToken }}</textarea>
+                        <textarea class="form-control" rows="10" v-model="accessToken"></textarea>
                     </div>
 
                     <!-- Modal Actions -->
@@ -153,8 +153,10 @@
         </div>
     </div>
 </template>
-
+<script src="{{ asset('js/app.js') }}"></script>
 <script>
+
+
     export default {
         /*
          * The component's data.
@@ -275,4 +277,5 @@
             }
         }
     }
+
 </script>
