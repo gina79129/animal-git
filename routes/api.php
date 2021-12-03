@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\TypeController;
+use App\Http\Controllers\Api\Animal\AnimalLikeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,4 @@ Route::apiResource('types',TypeController::class);
 Route::middleware(['auth:api','scope:user-info'])->get('/user',function(Request $request){
     return $request->user();
 });
+Route::apiResource('animals.likes',AnimalLikeController::class)->only(['index','store']);

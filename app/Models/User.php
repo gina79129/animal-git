@@ -62,4 +62,10 @@ class User extends Authenticatable
     public function isAdmin(){
         return $this->permission === User::ADMIN_USER;
     }
+    /**
+     * 多對多關聯animal與user我的最愛關係
+     */
+    public function likes(){
+        return $this->belongsToMany('App\Models\Animal','animal_user_likes')->withTimestamps();
+    }
 }

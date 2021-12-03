@@ -130,7 +130,8 @@ class AnimalController extends Controller
         /**
          * 如沒有實體物件時，就在類別名稱後加上::class即可
          */
-        $this->authorize('create',Animal::class);
+        // $this->authorize('create',Animal::class);
+        
         /*表單驗證的功能使用$this->validate方法撰寫，方法中傳入第一個值為使用者請求的資料$request
           第二個值是一個陣列，key指的是客戶端請求時的欄位名稱，value就是laravel表單驗證定義的驗證規則字串
           可以使用多個驗證規則，每個驗證規則使用「|」符號分隔開，串成一串文字，參考官網網址如下
