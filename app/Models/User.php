@@ -21,6 +21,10 @@ class User extends Authenticatable
 
     use HasFactory, Notifiable;
     use HasApiTokens;
+
+    //定義常數，減少耦合，系統規劃就兩種身分
+    const ADMIN_USER='admin';
+    const MEMBER_USER='member';
     
     protected $fillable = [
         'name',
@@ -54,4 +58,8 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Animal','user_id','id');
     }
 
+    //是否為管理員(減少耦合使用)
+    public function isAdmin(){
+        return $this->permission === User::ADMIN_USER;
+    }
 }
