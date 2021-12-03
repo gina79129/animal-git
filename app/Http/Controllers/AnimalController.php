@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\AnimalResource;
 use App\Http\Resources\AnimalCollection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -131,7 +133,7 @@ class AnimalController extends Controller
          * 如沒有實體物件時，就在類別名稱後加上::class即可
          */
         // $this->authorize('create',Animal::class);
-        
+
         /*表單驗證的功能使用$this->validate方法撰寫，方法中傳入第一個值為使用者請求的資料$request
           第二個值是一個陣列，key指的是客戶端請求時的欄位名稱，value就是laravel表單驗證定義的驗證規則字串
           可以使用多個驗證規則，每個驗證規則使用「|」符號分隔開，串成一串文字，參考官網網址如下
@@ -147,30 +149,56 @@ class AnimalController extends Controller
             'personality' => 'nullable' //允許null
         ]);
 
-        /*
-           一般會員不需要會員輸入自己的ID建立動物資源，而是使用登入狀態判斷，後續將於身分
-           驗證章節修改這邊的內容，先將user_id強制寫成1寫入資料庫
-         */
-        // $request['user_id'] = 1;
-        //把使用者請求資料用all()方式轉為陣列，傳入create()方法中
-        // $animal = Animal::create($request->all());
+        //try包住可能會出錯的程式碼
+        try{
+            //開始資料庫交易
+            DB::beginTransaction();
+            /*
+            * 一般會員不需要會員輸入自己的ID建立動物資源，而是使用登入狀態判斷，後續將於身分
+            * 驗證章節修改這邊的內容，先將user_id強制寫成1寫入資料庫
+            */
+            // $request['user_id'] = 1;
+            //把使用者請求資料用all()方式轉為陣列，傳入create()方法中
+            // $animal = Animal::create($request->all());
+            
+            //登入會員新增動物，建立會員與動物的關係，返回動物物件
+            $animal = auth()->user()->animals()->create($request->all());
+            /*
+             * 上面寫入資料庫後不會再對資料庫做一次查詢動作，有些欄位如果沒有填寫，資料庫直接給予預設值，
+             * 程式方面若回傳$animal物件，沒有填寫的欄位就不會顯示，因此如果需要回傳完整的欄位資料，可以
+             * 使用refresh方法，再查詢一次資料庫，得到該筆的完整資料。
+             */
+            $animal = $animal->refresh();
 
-        $animal = auth()->user()->animals()->create($request->all());
+            //寫入第二張資料表
+            //製作建立動物資源同時將動物加到我的最愛 attach->給定ID加入關聯
+            $animal->likes()->attach(auth()->user()->id);
+            //提交資料庫，正式寫入資料庫
+            DB::commit();
 
-        /*
-          上面寫入資料庫後不會再對資料庫做一次查詢動作，有些欄位如果沒有填寫，資料庫直接給予預設值，
-          程式方面若回傳$animal物件，沒有填寫的欄位就不會顯示，因此如果需要回傳完整的欄位資料，可以
-          使用refresh方法，再查詢一次資料庫，得到該筆的完整資料。
-        */
-        $animal = $animal->refresh();
-        /*
-          使用Laravel寫好的輔助方法response()。第一個傳入變數$animal，將成功寫入資料庫以後，產生
-          出來的實體物件資料，包含在HTTP協定的內容中回傳給客戶端，第二個參數設定的HTTP狀態，可以直
-          接輸入HTTP狀態碼201表示「成功建立」的意思或用Symfony套件寫好的常數
-        */
-        return new AnimalResource($animal);
+            // return response($animal,Response::HTTP_CREATED);
+            /*
+             * 使用Laravel寫好的輔助方法response()。第一個傳入變數$animal，將成功寫入資料庫以後，產生
+             * 出來的實體物件資料，包含在HTTP協定的內容中回傳給客戶端，第二個參數設定的HTTP狀態，可以直
+             * 接輸入HTTP狀態碼201表示「成功建立」的意思或用Symfony套件寫好的常數
+             */
+            //回傳資料
+            return new AnimalResource($animal);
 
-        // return response($animal,Response::HTTP_CREATED);
+        }catch (\Exception $e){
+            //擷取到Exception例外錯誤，上面做了什麼這裡撰寫復原的程式
+            //恢復資料庫交易
+            DB::rollback();
+            //紀錄Log
+            $errorMessage = 'MESSAGE: '.$e->getMessage();
+            Log::error($errorMessage);
+            //回傳錯誤訊息並且設定500狀態碼
+            return response(['error'=>'程式異常'],Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        
+
+       
+        
     }
 
     /**
