@@ -84,7 +84,7 @@ class AnimalPolicy
      */
     public function delete(User $user, Animal $animal)
     {
-        //
+        return $user->id === $animal->user_id;
     }
 
     /**

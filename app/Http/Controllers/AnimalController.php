@@ -241,6 +241,8 @@ class AnimalController extends Controller
      */
     public function destroy(Animal $animal)
     {
+        $this->authorize('delete',$animal); //分組權限檢查
+
         $animal->delete();
         return response(null,Response::HTTP_NO_CONTENT);
     }
