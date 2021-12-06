@@ -36,16 +36,29 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->configureRateLimiting();
-
+        /**
+         * 為達到更好的擴充性，可提供版號到URI裡
+         */
         $this->routes(function () {
-            Route::prefix('api')
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
+
+            Route::prefix('api/v1')
                 ->middleware('api')
-                ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
+            Route::prefix('api/v2')
+                ->middleware('api')
+                ->group(base_path('routes/apiV2.php'));
+
+            // Route::prefix('api')
+            //     ->middleware('api')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/api.php'));
+
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/web.php'));
         });
     }
 
