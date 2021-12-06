@@ -10,6 +10,8 @@ use App\Http\Resources\AnimalResource;
 use App\Http\Resources\AnimalCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreAnimalRequest;
+use App\Http\Requests\UpdateAnimalRequest;
 
 
 
@@ -126,7 +128,7 @@ class AnimalController extends Controller
      */
 
     //$request 指使用者請求時輸入的資料，表示這個參數要屬於Request類別才可以被方法接受
-    public function store(Request $request)
+    public function store(StoreAnimalRequest $request)
     {
         
 
@@ -140,15 +142,16 @@ class AnimalController extends Controller
           可以使用多個驗證規則，每個驗證規則使用「|」符號分隔開，串成一串文字，參考官網網址如下
           https://laravel.com/docs/8.x/validation#available-validation-rules
         */
-        $this->validate($request,[
-            'type_id' =>'nullable|exists:types,id', //客戶端的type_id必須存在分類資料表中，反之不存在types資料表將不允許新增以及修改，並回應type_id不是有效的資料
-            'name' =>'required|string|max:255', //必填文字最多255字元
-            'birthday' => 'nullable|date', //允許null或日期格式，使用PHP strtotime檢查傳入的日期字串
-            'area' => 'nullable|string|max:255', //允許null或文字最多255字元
-            'fix' => 'required|boolean', //必填並且為布林值
-            'description' => 'nullable', //允許null
-            'personality' => 'nullable' //允許null
-        ]);
+        //表單驗證已改由Request檔案驗證
+        // $this->validate($request,[
+        //     'type_id' =>'nullable|exists:types,id', //客戶端的type_id必須存在分類資料表中，反之不存在types資料表將不允許新增以及修改，並回應type_id不是有效的資料
+        //     'name' =>'required|string|max:255', //必填文字最多255字元
+        //     'birthday' => 'nullable|date', //允許null或日期格式，使用PHP strtotime檢查傳入的日期字串
+        //     'area' => 'nullable|string|max:255', //允許null或文字最多255字元
+        //     'fix' => 'required|boolean', //必填並且為布林值
+        //     'description' => 'nullable', //允許null
+        //     'personality' => 'nullable' //允許null
+        // ]);
 
         //try包住可能會出錯的程式碼
         try{
@@ -232,7 +235,7 @@ class AnimalController extends Controller
      * @param  \App\Models\Animal  $animal
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Animal $animal)
+    public function update(UpdateAnimalRequest $request, Animal $animal)
     {
         /**
          * 在預計檢查授權的地方加入下方程式碼，特別注意如果檢查的位置，沒有經過auth中介層，
@@ -245,15 +248,15 @@ class AnimalController extends Controller
          * 法名稱將會自動對應到原則檔案中的方法
          */
         $this->authorize('update',$animal); //分組權限檢查
-        $this->validate($request,[
-            'type_id' =>'nullable|exists:types,id', //客戶端的type_id必須存在分類資料表中，反之不存在types資料表將不允許新增以及修改，並回應type_id不是有效的資料
-            'name' =>'string|max:255', //文字類型最多255字元
-            'birthday' => 'nullable|date', //允許null或日期格式
-            'area' => 'nullable|string|max:255', //允許null或文字最多255字元
-            'fix' => 'boolean', //若填寫並須是布林值
-            'description' => 'nullable|string', //允許null或文字
-            'personality' => 'nullable|string' //允許null或文字
-        ]);
+        // $this->validate($request,[
+        //     'type_id' =>'nullable|exists:types,id', //客戶端的type_id必須存在分類資料表中，反之不存在types資料表將不允許新增以及修改，並回應type_id不是有效的資料
+        //     'name' =>'string|max:255', //文字類型最多255字元
+        //     'birthday' => 'nullable|date', //允許null或日期格式
+        //     'area' => 'nullable|string|max:255', //允許null或文字最多255字元
+        //     'fix' => 'boolean', //若填寫並須是布林值
+        //     'description' => 'nullable|string', //允許null或文字
+        //     'personality' => 'nullable|string' //允許null或文字
+        // ]);
 
         // $request['user_id'] = 1;
 
