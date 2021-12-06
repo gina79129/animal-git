@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\Client;
 use Laravel\Passport\Passport;
 use Mockery\Generator\StringManipulation\Pass\Pass;
+use phpDocumentor\Reflection\Types\Void_;
 
 class AnimalTest extends TestCase
 {
@@ -71,4 +72,72 @@ class AnimalTest extends TestCase
             //assertJsonStructure 判斷Json結構是否與我們預計的結構相同
             $response->assertStatus(200)->assertJsonStructure($resultStructure);
         }
+    
+    /**
+     * 測試建立animal
+     * 
+     * @return Void_
+     */
+
+     public function testCanCreateAnimal(){
+         //創建一個會員
+         $user = User::factory()->create();
+         //模擬會員權限
+         Passport::actingAs(
+             $user,
+             ['create-animals'] //設定必須有create-animals 的SCOPE權限
+         );
+
+         //如果有例外顯示於測試OUTPUT介面上
+         $this->withoutExceptionHandling();
+
+         //建立一個分類資料
+         $type = Type::factory()->create();
+
+         //請求資料
+         $formData = [
+             'type_id' => $type->id,
+             'name' => '大黑',
+             'birthday' => '2017-01-01',
+             'area' => '台北市',
+             'fix' => '1'
+         ];
+
+         //請求並傳入資料
+         $response = $this->json(
+             'POST',
+             'api/animals',
+             $formData
+         );
+
+         //檢查返回資料
+         $response->assertStatus(201)->assertJson(['data'=>$formData]);
+     }
+
+     public function testCanNotCreateAnimal(){
+         //誰?沒有模擬會員權限的程式
+
+         //建立一個分類資料
+         $type = Type::factory()->create();
+
+         //做什麼事? 請求時並傳入資料
+         $response = $this->json(
+             'POST',
+             'api/animals',
+             [
+                 'type_id' => $type->id,
+                 'name' => '大黑',
+                 'birthday' => '2017-01-01',
+                 'area' => '台北市',
+                 'fix' => '1'
+             ]
+         );
+
+         //結果? 檢查返回資料，沒有token，狀態碼回應401
+         $response->assertStatus(401)->assertJson(
+             [
+                 "message" => "Unauthenticated."
+             ]
+        );
+     }
 }
