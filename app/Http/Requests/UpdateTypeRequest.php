@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
 
 class UpdateTypeRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class UpdateTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' =>['max:50',Rule::unique('types','name')->ignore($type->name,'name')],
+            'name' =>['max:50',Rule::unique('types','name')->ignore($this->name,'name')],
             'sort' => 'nullable|integer',
         ];
     }
