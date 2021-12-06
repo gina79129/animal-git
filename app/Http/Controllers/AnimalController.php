@@ -24,7 +24,7 @@ class AnimalController extends Controller
     public function __construct(){
         $this->middleware('scopes:create-animals',['only'=>['store']]);
         //test CORS體驗 暫時關閉 若無註解掉會出現401未授權狀態也是正確的(14-8練習)
-        // $this->middleware('client',['only'=>['index','show']]);
+        $this->middleware('client',['only'=>['index','show']]);
         $this->middleware('auth:api',['except'=>['index','show']]);
     }
 
