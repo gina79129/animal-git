@@ -1,0 +1,285 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "送養系統API",
+        "description": " Victor RESTful API ",
+        "contact": {
+            "email": "lovemethanks@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/animals": {
+            "get": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "取得動物資源列表",
+                "description": "查看動物資源列表",
+                "operationId": "animalIndex",
+                "parameters": [
+                    {
+                        "name": "filters",
+                        "in": "query",
+                        "description": "篩選條件",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "name:黑"
+                    },
+                    {
+                        "name": "sorts",
+                        "in": "query",
+                        "description": "排序條件",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "name:asc,id:desc"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "設定回傳資料筆數(預設10筆資料)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "@/components/schemas/Animal"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "身分驗證未通過"
+                    },
+                    "429": {
+                        "description": "請求次數超過限制"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "新增動物資料",
+                "description": "新增動物資料",
+                "operationId": "animalStore",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "@/components/schemas/StoreAnimalRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "新增成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "@/components/schemas/Animal"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "身分驗證未通過"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/animals/{id}": {
+            "get": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "查看單一動物資源",
+                "description": "查看單一動物資源",
+                "operationId": "animalShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Animal id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "@/components/schemas/Animal"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "身分驗證未通過"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "刪除動物資料",
+                "description": "刪除動物資料",
+                "operationId": "animalDelete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Animal id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "刪除成功回傳空值",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "找不到資源"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "更新動物資料",
+                "description": "更新動物資料",
+                "operationId": "animalUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Animal id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "@/components/schemas/UpdateAnimalRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "@/components/schemas/Animal"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "找不到資源"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "passport": {
+                "type": "oauth2",
+                "description": "Laravel passport oauth2 security.",
+                "in": "header",
+                "scheme": "https",
+                "flows": {
+                    "password": {
+                        "authorizationUrl": "http://animal.test/oauth/authorize",
+                        "tokenUrl": "http://animal.test/oauth/token",
+                        "refreshUrl": "http://animal.test/token/refresh",
+                        "scopes": []
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
