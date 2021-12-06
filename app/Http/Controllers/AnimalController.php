@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreAnimalRequest;
 use App\Http\Requests\UpdateAnimalRequest;
+use App\Services\AnimalService;
 
 
 
@@ -22,8 +23,12 @@ class AnimalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    //class定義屬性預計存放， AnimalService物件
+    private $animalService;
+    //建構子加入由外部注入AnimalService物件
+    public function __construct(AnimalService $animalService){
 
-    public function __construct(){
+        $this->animalService = $animalService;
         $this->middleware('scopes:create-animals',['only'=>['store']]);
         //test CORS體驗 暫時關閉 若無註解掉會出現401未授權狀態也是正確的(14-8練習)
         $this->middleware('client',['only'=>['index','show']]);
@@ -50,9 +55,6 @@ class AnimalController extends Controller
         //從資料庫讀取資料之後，想如何整理資料可以參考Laravel集合官方文件，各種方法及範例都有
         //https://laravel.com/docs/8.x/collections#the-enumerable-contract
 
-        //設定預設值
-        $limit = $request->limit ?? 10; //未設定預設值為10
-
         //使用網址設定為快取檔案名稱
         //取得網址
         $url = $request->url();
@@ -71,38 +73,54 @@ class AnimalController extends Controller
             return Cache::get($fullUrl);
         }
 
+         //設定預設值
+         //改用App\Services\AnimalService.php function getListData
+         //$limit = $request->limit ?? 10; //未設定預設值為10
+
         //建立查詢建構器，分段的方式撰寫SQL語句
-        $query = Animal::query()->with('type');
+        //改用App\Services\AnimalService.php function getListData
+        // $query = Animal::query()->with('type');
 
         //查詢條件
-        if(isset($request->filters)){
-            $filters = explode(',',$request->filters);
-            foreach($filters as $k =>$filter){
-                list($k,$v) = explode(':',$filter);
-                $query->where($k,'like',"%$v%");
-            }
-        }
+        //改用App\Services\AnimalService.php 
+        // if(isset($request->filters)){
+        //     $filters = explode(',',$request->filters);
+        //     foreach($filters as $k =>$filter){
+        //         list($k,$v) = explode(':',$filter);
+        //         $query->where($k,'like',"%$v%");
+        //     }
+        // }
 
+        //改用App\Services\AnimalService.php function getListData
+        // $query = $this->animalService->filterAnimals($query,$request->filters);
+        
         //排序方式
-        if(isset($request->sorts)){
-            $sorts = explode(',',$request->sorts);
-            foreach($sorts as $k=>$sort){
-                list($k,$v) = explode(':',$sort);
-                if($v == 'asc' || $v == 'desc'){
-                    $query->orderBy($k,$v);
-                }
-            }
-        }else{
-            $query->orderBy('id','desc');
-        }
+        //改用App\Services\AnimalService.php
+        // if(isset($request->sorts)){
+        //     $sorts = explode(',',$request->sorts);
+        //     foreach($sorts as $k=>$sort){
+        //         list($k,$v) = explode(':',$sort);
+        //         if($v == 'asc' || $v == 'desc'){
+        //             $query->orderBy($k,$v);
+        //         }
+        //     }
+        // }else{
+        //     $query->orderBy('id','desc');
+        // }
+
+        //改用App\Services\AnimalService.php function getListData
+        // $query = $this->animalService->sortAnimals($query,$request->sorts);
 
         //使用Model orderBy方法加入SQL語法排序條件，依照 id 由大到小排序
-        $animals = $query->paginate($limit) //使用分頁方法，最多回傳$limit筆資料
-                         ->appends($request->query()); //appends主要是可以將使用者請求的參數附加在分頁資訊中，
+        //改用App\Services\AnimalService.php function getListData
+        //$animals = $query->paginate($limit) //使用分頁方法，最多回傳$limit筆資料
+                         //->appends($request->query()); //appends主要是可以將使用者請求的參數附加在分頁資訊中，
                                                          //如first_page_url網址後會包含limit參數，表示使用者請
                                                          //求時，設定?limit=10限制，回傳分頁訊息時自動加上limit
                                                          //參數方便客戶端下次再執行請求，不會忘記加篩選規則 
         
+        $animals = $this->animalService->getListData($request);
+
         //沒有快取記錄記住資料，並設定60秒過期，快取名稱使用網址命名
         return Cache::remember($fullUrl,60,function() use ($animals){
             // return response(['data'=>$animals,'message'=>''],Response::HTTP_OK);
